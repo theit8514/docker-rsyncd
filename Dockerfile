@@ -1,4 +1,4 @@
-FROM ubuntu:utopic
+FROM ubuntu:16.04
 MAINTAINER thomfab
 
 RUN apt-get update && \
