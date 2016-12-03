@@ -1,15 +1,15 @@
-#!/bin/bash
+#!/usr/bin/with-contenv bash
+
 VOLUME=${VOLUME:-"volume"}
 ALLOW=${ALLOW:-192.168.0.0/16 172.16.0.0/12}
-OWNER=${OWNER:-65534}
-GROUP=${GROUP:-65534}
+OWNER=`id -u abc`
+GROUP=`id -g abc`
 
-# create users matching ids passed if necessary
-if [ "${GROUP}" != "nogroup" ]; then
-        groupadd -g ${GROUP} rsyncdgroup
+if [ `stat -c %u /volume` != "${OWNER}" ]; then
+    chown ${OWNER} /volume
 fi
-if [ "${OWNER}" != "nobody" ]; then
-        useradd -u ${OWNER} -G rsyncdgroup rsyncduser
+if [ `stat -c %g /volume` != "${GROUP}" ]; then
+    chgrp ${GROUP} /volume
 fi
 
 [ -f /etc/rsyncd.conf ] || cat <<EOF > /etc/rsyncd.conf
@@ -26,4 +26,3 @@ log file = /dev/stdout
     comment = ${VOLUME}
 EOF
 
-exec /usr/bin/rsync --no-detach --daemon --config /etc/rsyncd.conf "$@"

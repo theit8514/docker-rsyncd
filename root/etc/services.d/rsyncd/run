@@ -1,0 +1,4 @@
+#!/usr/bin/with-contenv bash
+
+echo "Starting Rsync Daemon."
+exec /usr/bin/rsync --no-detach --daemon --config /etc/rsyncd.conf
