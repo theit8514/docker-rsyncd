@@ -9,7 +9,7 @@ This is inspired by https://github.com/nabeken/docker-volume-container-rsync and
 
 Launch the container via docker:
 ```
-docker run -d -p <port>:873 --name rsyncd thomfab/docker-rsyncd
+docker run -d -p <port>:873 --name rsyncd theit8514/docker-rsyncd
 ```
 
 You can connect to the rsync server you just created with:
@@ -36,7 +36,7 @@ Example :
 ```
 docker run -d -p <port>:873 --name rsyncd \
               -e VOLUME="backup" \
-              thomfab/docker-rsyncd
+              theit8514/docker-rsyncd
 ```
 which will give :
 ```
@@ -52,39 +52,39 @@ You can override via an environment variable like this:
 docker run -d -p <port>:873 \
               --name rsyncd \
               -e ALLOW='10.0.0.0/8 x.x.x.x/y' \
-              thomfab/docker-rsyncd
+              theit8514/docker-rsyncd
 ```
 
-### OWNER
-By default the user "nobody" is used. You can customize and pass the id of a user the docker host (so that file perms are correct).
-Example, if your docker host has a user "ubuntu" with id 1000 you can use :
+### PUID
+By default the UID of 911 is used. You can use the PUID variable to set the correct file permissions between the host and container.
+Example, if your docker host has a user "ubuntu" with id 1000 you can use:
 ```
 docker run -d -p <port>:873 \
            --name rsyncd \
-           -e OWNER=1000 \
-           thomfab/docker-rsyncd
+           -e PUID=1000 \
+           theit8514/docker-rsyncd
 ```
 Files created in the volume by rsyncd will belong to the user ubuntu (see volumes below).
 
-### GROUP
-By default the group "nogroup" is used. You can also customize and pass the id of a group on the docker host.
-Example, if your docker host has a group "users" with id 100 you can use :
+### PGID
+By default the GID of 911 is used. You can also customize and pass the id of a group on the docker host.
+Example, if your docker host has a group "users" with id 100 you can use:
 ```
 docker run -d -p <port>:873 \
            --name rsyncd \
-           -e GROUP=100 \
-           thomfab/docker-rsyncd
+           -e PGID=100 \
+           theit8514/docker-rsyncd
 ```
 Files created in the volume by rsyncd will belong to the group users.
 
 ### Sync volume
-The sync folder exposed by rsyncd is a docker volume. You can map it to a local folder on the docker host :
-Example, if your docker host has a user "ubuntu" with id 1000 you can use :
+The sync folder exposed by rsyncd is a docker volume. You can map it to a local folder on the docker host.
+Example, if your docker host has a user "ubuntu" with id 1000 you can use:
 ```
 docker run -d -p <port>:873 \
               --name rsyncd \
               -v /path/to/host/folder:/volume \
-              thomfab/docker-rsyncd
+              theit8514/docker-rsyncd
 ```
 
 ### Full example
@@ -92,9 +92,9 @@ docker run -d -p <port>:873 \
 docker run -d -p 873:873 \
               --name rsyncd \
               -e VOLUME="backup" \
-              -e OWNER=1000 \
-              -e GROUP=100 \
+              -e PUID=1000 \
+              -e PGID=100 \
               -v /srv/backup:/volume \
-              thomfab/docker-rsyncd
+              theit8514/docker-rsyncd
 ```
-This will start an rsync daemon, exposed on the standard port, with a volume named "backup", and map it to the host folder /srv/backup. Files created during sync will belong to user "ubuntu" and group "users" on a standard Ubuntu install.
+This will start an rsync daemon, exposed on the standard port, with a volume named "backup", and map it to the host folder /srv/backup. Files created during sync will belong to user of ID 1000 and group of ID 100.
